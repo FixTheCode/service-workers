@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Form</title>
+    <link rel="icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="note">
+            <p id="message"></p>
+        </div>
+        <h1>
+            Demonstration: 
+        </h1>
+        <h2>
+            Using Workbox / Service Workers for offline web app
+        </h2>
+        <p id="user-agent"></p>
+        <p id="user-message"></p>
+        <div class="mycontainer">
+            <form id="my-form" action="form.html">
+                First name: <input type="text" name="firstname" value="Mickey"><br>
+                Last name: <input type="text" name="lastname" value=""><br>
+                <input type="submit" value="Submit">
+                <input type="button" value="Back" onClick="window.history.go(-1); return false;">
+            </form>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="index.js"></script>
+        <script src="db.js"></script>
+        <script>
+        var ua = $('#user-agent');
+        ua.text('testing on : ' + navigator.userAgent);
+
+        // hook into browser supported events for the online status and
+        // infor the user. 
+        window.addEventListener('online',  updateOnlineStatus);
+        window.addEventListener('offline', updateOfflineStatus);
+        
+        // clear out data from local storage.  you could have logic here
+        // to refresh the form from the saved data if you needed to.
+        function updateOnlineStatus() {
+            $('#message').html('Application back online');
+            deleteAllData();
+        }
+
+        // clear out data then add whatever is on the form
+        function updateOfflineStatus() {
+            $('#message').html('Application went offline');
+            var formData = new FormData(document.querySelector('#my-form'));
+            saveData(formData);
+        }
+        if (navigator.onLine) {
+            $('#message').html('Application is online');
+        }
+        // using jQuery to capture form submit event and save data to local storage
+        // if application is not online. 
+        $(function() {
+            $('#my-form').on('submit',function(e) {
+                if (!navigator.onLine) {
+                    $('#message').html('Application is offline. Saving data locally.');
+                    e.preventDefault(); // cancel the actual submit
+                    var formData = new FormData(document.querySelector('#my-form'));
+                    saveData(formData);
+                }
+                // code to post form when online
+            });
+        });
+        </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline Service Worker Example</title>
+    <link rel="icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="note">
+            <p id="message"></p>
+        </div>
+        <h1>
+            Demonstration: 
+        </h1>
+        <h2>
+            Using Workbox / Service Workers for offline web app
+        </h2>
+        <p id="user-agent"></p>
+        <p id="storage-message"></p>
+        <div class="mycontainer">
+            <button id="show-btn" title="Show">Show Cache</button>
+            <button id="delete-btn" title="Show">Delete Cache</button>
+            <button id="refresh-btn" title="Refresh Page" onClick="window.location.reload();">Refresh Page</button>
+            <button id="form-btn" title="Form" onClick="location.href='form.html'">Show Form</button>
+            <p id="instructions">Press Show to revelate what's in our caches.</p> 
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="index.js"></script>
+        <script>
+        var ua = $('#user-agent');
+        var st = $('#storage-message');
+        var storage = {percentUsed:0,usageInMib:0,quotaInMib:0,quotaInGB:0};
+        ua.text('testing on : ' + navigator.userAgent);
+
+        // register a service worker for this page
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+
+            // listen for cache update messages so we can fire off the 
+            // approproate code. here we use it to update the details
+            // on storage usage displayed to the user
+            const updatesChannel = new BroadcastChannel('cache-update');
+            updatesChannel.addEventListener('message', async (event) => {
+                const { cacheName, updatedURL } = event.data.payload;
+                //todo update storage used.  headers are empty when testing locally.
+                //console.log(updatedURL);
+            });
+        }
+
+        // update page with details of cache and amount of storage used
+        $('#show-btn').click(async function(){
+            var res = await showCachedItems();
+            if (res.length > 0) {
+                var s = '';
+                for (var i = 0, len = res.length; i < len; i++) {
+                    s += (res[i]) + '<br/>';
+                }
+                $('#instructions').html(s);
+            } else {
+                $('#instructions').html('Nada. Refresh page to load caches.');
+            }
+            await showStorageUsed(storage);
+            st.text('Storage used: ' + storage.usageInMib + ' MiB, Quota '+ storage.quotaInGB + ' GB, ' + storage.percentUsed +' % used.');
+        });
+
+        $('#delete-btn').click(async function(){
+            var res = await deleteCachedItems();
+            if (res) {
+                $('#instructions').html('Caches deleted.');
+            } else {
+                $('#instructions').html('Problem encounted deleting caches. They may have expired or already been deleted.'); 
+            }
+        });
+
+        // hook into browser supported events for the online status and
+        // update the user of status.  use navigator.onLine to set initial 
+        // user message
+        window.addEventListener('online',  updateOnlineStatus);
+        window.addEventListener('offline', updateOfflineStatus);
+
+        function updateOnlineStatus() {
+            $('#message').html('Application back online');
+        }
+        function updateOfflineStatus() {
+            $('#message').html('Application went offline');
+        }
+        // navigator.onLine is implemented differently by browsers. a
+        // better solution would be to attempt to reference a known file
+        // on the internet and set the message based on the response to 
+        // that. the above events capture and reports disconnects and 
+        // reconnects
+        if (navigator.onLine) {
+            $('#message').html('Application is online');
+        }
+        </script>
+</body>
+</html>
