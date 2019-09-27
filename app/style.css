@@ -1,0 +1,95 @@
+body, button, html {
+    font-family: 'Ubuntu', sans-serif; 
+    background: #ffffff;
+    color: #333d47;
+    font-size: 14px;
+}
+
+button {
+    outline:none;
+    color: #333d47 !important;
+    text-decoration: none;
+    background: #9CD7CC;
+    width: 5em;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #494949 !important;
+    display: inline-block;
+    transition: all 0.4s ease 0s;
+    }
+
+button:hover {
+    outline:none;
+    color: #ffffff !important;
+    background: #009578;
+    border-color: #009578;
+    transition: all 0.4s ease 0s;
+}
+
+button:disabled {
+    outline:none;
+    background: #ccc
+}
+
+button:enabled {
+    outline:none;
+    background: #9CD7CC;
+}
+
+button:focus {
+    outline:none;
+    color: #c3e
+}
+
+input, textarea, select {
+    border:1px #000 !important;
+    box-shadow: 0 0 1px #000 !important;
+    width: 10%;
+    padding: 10px;
+    margin: 10px;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline-offset: 0px !important;
+    outline: none !important;
+    border:1px #009578 !important;
+    box-shadow: 0 0 1px#009578 !important;
+}
+
+textarea {
+    width: 80%;
+    font-size: 14px;
+}
+
+h1 {
+    padding-top: 25px;
+}
+#note {
+    position: absolute;
+    z-index: 101;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color:rgba(253, 224, 115, 0.5);
+    text-align: center;
+    line-height: 0.5;
+    overflow: hidden; 
+}
+
+#instructions {
+    color: #006853;
+}
+
+.mycontainer {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 50px 50px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .mycontainer {
+        width: 85vw;
+        max-width: 85vw;
+    }
+}
