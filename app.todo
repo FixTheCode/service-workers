@@ -1,0 +1,10 @@
+- [x] Workbox routes
+- [x] show cache contents
+- [x] online/offline status message
+- [x] calculate storage used
+- [x] delete cache contents
+- [x] refresh page
+- [x] cache a form
+- [] save and retrieve form data
+- [] broadcast change events
+- [] completed
